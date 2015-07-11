@@ -1,0 +1,33 @@
+<form action="insert.php" method="post">
+<b><span style="background: yellow; color:darkgreen">Give your feedback here</span></b><br>
+<b>Name:</b>		<input title="Enter your name" type="text" name="name" required autofocus maxlength="15" size="15"><br>
+<b>Server:</b>		<select title="Choose what server you often play WC3" name="server" multiple size="4">			
+			<option value="OMBU">3dgames.com.ar(Ombu)</option>
+			<option value="USAE">Azeroth(USEast)</option>
+			<option value="XPAM">Eurobattle.net(XPAM)</option>
+			<option value="W3EU">Europe.warcraft3.eu(W3EU)</option>
+			<option value="ASIA">Kalimdo(ASIA)</option>
+			<option value="KONC">Konco.indogamers.us</option>
+			<option value="EURO">Northrend(Europe)</option>
+			<option value="REVO">RevoIndo</option>
+			<option value="GARE">Garena</option>			
+			<option value="USAW">Lodaeron(USWest)</option>
+		</select><br>
+<b>GamingID:</b> 	<input title="Enter your nickname that corresponds to the server you play" type="text" name="gameID" required maxlength="15" size="15" value="myPlayingNick" onfocus="if(this.value == this.defaultValue) this.value = ''"><br>
+<b>Skype:</b> 		<input title="Enter your Skype here" type="text" name="skypeID" required maxlength="30" size="30" value="mySkypeID" onfocus="if(this.value == this.defaultValue) this.value = ''" ><br>
+<b>Yahoo:</b> 		<input title="Enter your Yahoo here" type="text" name="yahooID" maxlength="30" size="30" value="myYahooID" onfocus="if(this.value == this.defaultValue) this.value = ''" ><br>
+<b>Email:</b> 		<input title="Enter your Email here" type="email" name="email" required maxlength="40" size="40" value ="email@abc.com" onfocus="if(this.value == this.defaultValue) this.value = ''" ><br>
+<br>
+<TEXTAREA onfocus="if(this.value==this.defaultValue)this.value=''" onblur="if(this.value=='')this.value=this.defaultValue" NAME="comments" COLS=40 ROWS=5>Enter your comment or leave a message to us:</TEXTAREA>
+<br>
+<input type="Submit" name ="submit"><input type="submit" formaction="insert.php" value="Submit as admin" name ="adminsubmit">
+</form>
+I have an attachment to share with everyone
+<form action="insert.php">
+  <input type="file" name="att" accept=".w3g,.w3x,.w3t,.txt,.php,.cpp,.h,.csv,.htm,.html,.asp,.rtf,.doc,.docx,.xls,.xlsx,.pdf,.cfg,.ppt,.pptx,image/*">
+  <input type="submit" value="Attach">
+</form>
+<b>Files allowed:</b>.w3g,.w3x,.w3t,.txt,.cpp,.h,.csv,.htm,.html,.php<br>
+.asp,.rtf,.doc,.docx,.xls,.xlsx,.pdf,.cfg,.ppt,.pptx,image files
+<br><br>
+<b>©<a href=http://thegenmaps.tk/>TheGenMaps.TK</a></b>

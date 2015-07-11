@@ -1,0 +1,204 @@
+<script type="text/javascript">
+function OnScroll(div) {
+    var d1 = document.getElementById("ta1");
+    d1.scrollTop = div.scrollTop;
+}
+function OnScroll2(div) {
+    var d1 = document.getElementById("ta2");
+    d1.scrollTop = div.scrollTop;
+}
+
+window.setInterval("checkScroll(document.getElementById('ta1'), document.getElementById('ta2'))", 170);
+
+window.onload=function () {
+     var objDiv = document.getElementById("ta1");
+     objDiv.scrollTop = objDiv.scrollHeight;
+     var objDiv = document.getElementById("ta2");
+     objDiv.scrollTop = objDiv.scrollHeight;
+}
+</script>
+<html>
+<meta http-equiv="refresh" content="9">
+<body>
+<table><tr><td valign = "top">
+<?php
+mysql_connect("localhost", "root", "ultra");
+mysql_select_db("sage");
+$result = mysql_query("SELECT * FROM gamelist");
+$collapse = 0;
+$textcollapse = 0;
+$numplayer = 0;
+$numgames = 0;
+$showchat = 0;
+$n=0;
+if (isset($_GET['collapse']))
+	$collapse = $_GET['collapse'];
+if (isset($_GET['textcollapse']))
+	$textcollapse = $_GET['textcollapse'];
+while($row = mysql_fetch_array($result))
+{
+	if($row['totalplayers']>0)
+	{
+		$numplayer += $row['totalplayers'];
+		$numgames += $row['totalgames'];
+		$n++;
+	}
+}
+echo '<t><b><font face="Courier New" size="4">' . $numplayer . " players in " . $numgames . " games served by " .$n . " bots " . '</font></b><br>';
+mysql_query("DELETE FROM textchatlog WHERE time < now() - interval 3 day");
+$result = mysql_query("SELECT * FROM gamelist");
+while($row = mysql_fetch_array($result))
+{
+	if(!empty($row['gamename']))
+	{
+		if($collapse == $row['id']) {
+			echo $row['id'] ?>. <a href="?collapse=0" title="<?php echo $row['totalplayers'] ?> players in <?php echo $row['totalgames'] ?> games">
+			<b><?php echo substr($row['gamename'],0,31) ?>
+			( <?php echo $row['slotstaken'] ?> / <?php echo $row['slotstotal'] ?> )
+			</b></a>
+		<?php
+		}
+		else {
+			echo $row['id'] ?>. <a href="?collapse=<?php echo $row['botid'] ?>" title="Detail Review">
+			<b><?php echo substr($row['gamename'],strpos($row['gamename'],' '),31) ?>
+			( <?php echo $row['slotstaken'] ?> / <?php echo $row['slotstotal'] ?> )
+			</b></a>
+		<?php
+		}
+	} else if(empty($row['map']) && $row['totalgames']>0){
+			$str1 = ($row['totalplayers']>1) ? 'players' : 'player';
+			$str2 = ($row['totalgames']>1) ? 'games' : 'game';
+			echo $row['id'] ?>. <a href="?collapse=<?php echo $row['botid'] ?>" title="View Chat">
+			<b>Started (<?php echo $row['totalplayers']." ".$str1?> / <?php echo $row['totalgames']." ".$str2?> )</b></a>
+	<?php
+	}
+	echo '<br>';
+}
+?>
+</td><td valign = "top">
+
+<?php
+if($collapse <> 0) {
+	$result = mysql_query("SELECT * FROM gamelist where botid = ". $collapse);
+	$row = mysql_fetch_array($result);
+	$array = explode("\t", $row['usernames']);
+	$creator = $row['creatorname'];
+	?>
+	<table title="Gen bots" cellspacing="0" cellpadding="2" border="1" >
+	<tr style="background-color:80FF80;">
+	<td colspan = "5"><b>[TempOwner]:<?php echo $row['ownername']?></b></td>
+	<td colspan = "2"><b>[Creator]:<?php echo $row['creatorname']?></b></td></tr>
+	<tr style="background-color:FFFF6E;">
+	<td><b>dlstatus</b></td>
+	<td><b>Nickname</b></td>
+	<td><b>Ping</b></td>
+	<td><b>Server</b></td>
+	<td><b>From</b></td>
+	<td><b>Race</b></td>
+	<td><b>Team</b></td></tr>
+
+	<?php
+	for($i = 0; $i < count($array) - 7; $i += 8) {
+		$dlstatus = $array[$i];
+		$username = $array[$i + 1];
+		$joinrm = $array[$i + 2];
+			if ($joinrm == "200.51.203.231") $joinrm = "OMBU";
+			if ($joinrm == "server.eurobattle.net") $joinrm = "XPAM";
+			if ($joinrm == "europe.warcraft3.eu") $joinrm = "W3EU";
+			if ($joinrm == "119.82.240.251") $joinrm = "RevoIndo";
+			if ($joinrm == "konco.indogamers.us") $joinrm = "KoncoIndo";
+
+		$team = $array[$i + 3];
+		$color = $array[$i + 4];
+			if ($color == 0) $color = "#FF0000";
+			if ($color == 1) $color = "#0000FF";
+			if ($color == 2) $color = "#00FFFF";
+			if ($color == 3) $color = "#550088";
+			if ($color == 4) $color = "#FFD700";
+			if ($color == 5) $color = "#ff8800";
+			if ($color == 6) $color = "#00ff00";
+			if ($color == 7) $color = "#ee55bb";
+			if ($color == 8) $color = "#999999";
+			if ($color == 9) $color = "#77bbff";
+			if ($color == 10) $color = "#116644";
+			if ($color == 11) $color = "#552200";
+
+		$ping = $array[$i + 5];
+		$country = $array[$i + 6];
+			$countryimg = strtolower($country);
+			if ($countryimg == "cs") $countryimg = "cz";
+			if ($countryimg <> "??") $countryimg = '<img width="26" height="20" title="'. $country. '" src="/PHP/Pictures/flagsbig/'. $countryimg. '.png">';
+			else $countryimg = '<img width="26" height="20" title="'. $country. '" src="/PHP/Pictures/flagsbig/_Olimpic Movement.png">';
+
+		$race = $array[$i + 7];
+			if ($race == "human") $race = '<img width="26" height="20" title="'. $race. '" src="/PHP/Pictures/wc3Races/tier2-human.gif">';
+			if ($race == "orc") $race = '<img width="26" height="20" title="'. $race. '" src="/PHP/Pictures/wc3Races/tier2-orc.gif">';
+			if ($race == "nightelf") $race = '<img width="26" height="20" title="'. $race. '" src="/PHP/Pictures/wc3Races/tier2-nightelf.gif">';
+			if ($race == "undead") $race = '<img width="26" height="20" title="'. $race. '" src="/PHP/Pictures/wc3Races/tier2-undead.gif">';
+			if ($race == "random") $race = '<img width="26" height="20" title="'. $race. '" src="/PHP/Pictures/wc3Races/tier2-random.gif">';
+
+		if($username <> "") {
+			?>
+			<tr style="background-color:F2EAD3;">
+			<td><?php echo $dlstatus ?></td>
+			<td><b><font color = "<?php echo  $color?>"><?php echo $username?></font></b></td>
+			<td><?php echo $ping . ' ms' ?></td>
+			<td><?php echo $joinrm ?></td>
+			<td><?php echo $countryimg ?></td>
+			<td><?php echo $race ?></td>
+			<td><?php echo $team ?></td></tr>
+		<?php
+		}
+		else {
+			?>
+			<tr><td colspan = "7"><center>Empty</center></td>
+			<?php
+		}
+	}
+	?>
+
+</tr></table></td></body><body>
+<?php
+	$bot = $row[1];
+	$result = mysql_query("SELECT * FROM textchatlog where botid = ". $collapse ." ORDER BY time DESC LIMIT 0,1");
+	$firstrow = mysql_fetch_array($result);
+//	$result = mysql_query("SELECT * FROM textchatlog where botid = ". $collapse ." AND time > (now() - interval 90 minute) AND message LIKE '%Lobby%' ORDER BY time ASC LIMIT 0,400");
+	$result = mysql_query("SELECT * FROM (SELECT * FROM textchatlog where botid = ". $collapse ." AND message LIKE '%Lobby%' ORDER BY time DESC LIMIT 50) x ORDER BY time");
+
+	?>
+	<table title="Gen bots" cellspacing="0" cellpadding="0"><td valign = "top">
+	<h3 align ="center" style="background-color:80FF80;">Lobby Text <?php echo substr($firstrow['time'],0,10)?>, Bot #<?php echo  $bot?> - <?php echo $creator?></h3>
+	<div id="ta1" onscroll ="OnScroll2(this)" style="font-size:14px;height:130px;width:510px;margin-top:10px;float:left;overflow: auto;">
+
+	<?php
+	$j=0;
+	while($row = mysql_fetch_array($result))
+	{
+		$array = explode("] ", $row[2]);
+		$j++;
+		//	echo $j. ". \t". $row[3]. "\t". $array[0]. "]\t". $array[2]. ": \t". $array[1]. '<br>'; <p style="background-color:FFFF6E;"><b>Stt Time GameName Durée Team Chat Player Message</b></p><p style="background-color:FFFF6E;"><b>Stt     Time    GameName    Player    Message</b></p>
+		echo $j. ". \t(". substr($row[3],11). ")\t". substr($row[2],7). '<br>';
+	} ?>
+	</div></td><td valign = "top">
+	<h3 align ="center" style="background-color:80FF80;">Chat Log <?php echo substr($firstrow['time'],0,10)?>, Bot #<?php echo  $bot?> - <?php echo $creator?></h3>
+	<div id="ta2" onscroll ="OnScroll(this)" style="font-size:14px;height:130px;width:600px;margin-top:10px;float:right;overflow: auto;">
+	<?php
+//	$result = mysql_query("SELECT * FROM textchatlog where botid = ". $collapse ." AND time > (now() - interval 40 minute) AND message NOT LIKE '%Lobby%' ORDER BY time ASC LIMIT 0,400");
+	$result = mysql_query("SELECT * FROM (SELECT * FROM textchatlog where botid = ". $collapse ." AND message NOT LIKE '%Lobby%' ORDER BY time DESC LIMIT 50) x ORDER BY time");
+	$k=0;
+	while($row = mysql_fetch_array($result))
+	{
+		$array = explode("] ", $row[2]);
+		$bool = strpos($row[2],"Lobby") > 0 ? true : false;
+		if (!$bool){
+			$k++;
+			echo $k. ". \t(". substr($row[3],11). ")\t". substr($row[2],7). '<br>';
+		}
+	} ?>
+	</div></td></table>
+<?php
+} mysql_close(); ?>
+</body>
+</html>
+div#page>div.logo+ul#navigation>li*5>a
+
